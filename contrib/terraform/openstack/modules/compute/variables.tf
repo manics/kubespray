@@ -64,6 +64,8 @@ variable "network_name" {
 variable "flavor_bastion" {
 }
 
+variable "supplementary_master_groups" {
+}
 
 variable "network_id"{
 
