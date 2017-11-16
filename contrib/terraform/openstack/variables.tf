@@ -112,6 +112,11 @@ variable "external_net" {
   description = "uuid of the external/public network"
 }
 
+variable "supplementary_master_groups" {
+  description = "additional kubespray groups for master nodes"
+  default = "kube-node"
+}
+
 variable "username" {
   description = "Your openstack username"
 }

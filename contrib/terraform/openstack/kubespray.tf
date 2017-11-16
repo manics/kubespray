@@ -47,6 +47,7 @@ module "compute" {
   flavor_gfs_node = "${var.flavor_gfs_node}"
   network_name = "${var.network_name}"
   flavor_bastion = "${var.flavor_bastion}"
+  supplementary_master_groups = "${var.supplementary_master_groups}"
   k8s_master_fips = "${module.ips.k8s_master_fips}"
   k8s_node_fips = "${module.ips.k8s_node_fips}"
   bastion_fips = "${module.ips.bastion_fips}"
