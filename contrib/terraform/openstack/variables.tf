@@ -116,19 +116,3 @@ variable "supplementary_master_groups" {
   description = "additional kubespray groups for master nodes"
   default = "kube-node"
 }
-
-variable "username" {
-  description = "Your openstack username"
-}
-
-variable "password" {
-  description = "Your openstack password"
-}
-
-variable "tenant" {
-  description = "Your openstack tenant/project"
-}
-
-variable "auth_url" {
-  description = "Your openstack auth URL"
-}

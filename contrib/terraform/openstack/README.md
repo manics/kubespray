@@ -82,23 +82,102 @@ used to deploy and provision the software requirements.
 
 #### OpenStack
 
-Ensure your OpenStack **Identity v2** credentials are loaded in environment
-variables. This can be done by downloading a credentials .rc file from your
-OpenStack dashboard and sourcing it:
+No provider variables are hard coded inside `variables.tf` because Terraform
+supports various authentication method for OpenStack, between identity v2 and
+v3 API, `openrc` or `clouds.yaml`.
+
+These are examples and may vary depending on your OpenStack cloud provider,
+for an exhaustive list on how to authenticate on OpenStack with Terraform
+please read the [OpenStack provider documentation](https://www.terraform.io/docs/providers/openstack/).
+
+##### Recommended method : clouds.yaml
+
+Newer recommended authentication method is to use a `clouds.yaml` file that can be store in :
+
+* `Current Directory`
+* `~/.config/openstack`
+* `/etc/openstack`
+
+`clouds.yaml` :
 
 ```
-$ source ~/.stackrc
+clouds:
+  mycloud:
+    auth:
+      auth_url: https://openstack:5000/v3
+      username: "username"
+      project_name: "projectname"
+      project_id: projectid
+      user_domain_name: "Default"
+      password: "password"
+    region_name: "RegionOne"
+    interface: "public"
+    identity_api_version: 3
 ```
 
-Ensure that you have your Openstack credentials loaded into Terraform
-environment variables. Likely via a command similar to:
+If you have multiple clouds defined in your `clouds.yaml` file you can choose
+the one you want to use with the environment variable `OS_CLOUD` :
 
 ```
-$ echo Setting up Terraform creds && \
-  export TF_VAR_username=${OS_USERNAME} && \
-  export TF_VAR_password=${OS_PASSWORD} && \
-  export TF_VAR_tenant=${OS_TENANT_NAME} && \
-  export TF_VAR_auth_url=${OS_AUTH_URL}
+export OS_CLOUD=mycloud
+```
+
+##### Deprecated method : openrc
+
+When using classic environment variables, Terraform uses default `OS_*`
+environment variables :
+
+With identity v2 :
+
+```
+source openrc
+
+env | grep OS
+
+OS_AUTH_URL=https://openstack:5000/v3
+OS_PROJECT_ID=projectid
+OS_PROJECT_NAME=projectname
+OS_USERNAME=username
+OS_PASSWORD=password
+OS_REGION_NAME=RegionOne
+OS_INTERFACE=public
+OS_IDENTITY_API_VERSION=2
+```
+
+With identity v3 :
+
+```
+source openrc
+
+env | grep OS
+
+OS_AUTH_URL=https://openstack:5000/v3
+OS_PROJECT_ID=projectid
+OS_PROJECT_NAME=username
+OS_PROJECT_DOMAIN_ID=default
+OS_USERNAME=username
+OS_PASSWORD=password
+OS_REGION_NAME=RegionOne
+OS_INTERFACE=public
+OS_IDENTITY_API_VERSION=3
+OS_USER_DOMAIN_NAME=Default
+```
+
+Terraform does not support a mix of DomainName and DomainID, choose one or the
+other :
+
+```
+* provider.openstack: You must provide exactly one of DomainID or DomainName to authenticate by Username
+```
+
+```
+unset OS_USER_DOMAIN_NAME
+export OS_USER_DOMAIN_ID=default
+
+or
+
+unset OS_PROJECT_DOMAIN_ID
+set OS_PROJECT_DOMAIN_NAME=Default
 ```
 
 ### Terraform Variables
